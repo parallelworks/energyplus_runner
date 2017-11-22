@@ -1,0 +1,13 @@
+<tool id='marmar_energyplus_runner' name='marmar_energyplus_runner'>
+  <command interpreter='swift'>ep.swift</command>
+  <inputs>
+    <param name='epzip' type='data' format='zip' label='EnergyPlus Input Files' help='Please upload a zip input file with a .epw and .idf file for each case. '>
+    </param>
+  </inputs>
+  <outputs>
+    <data name='results' format='zip' label='${tool.name}-RESULTS.zip'>
+    </data>
+    <data name='total' format='csv' label='${tool.name}-TOTAL.csv'>
+    </data>
+  </outputs>
+</tool>

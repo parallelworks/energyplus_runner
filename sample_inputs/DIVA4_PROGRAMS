@@ -1,0 +1,26 @@
+
+annualdaylight
+    diva annualdaylight inputfile.dlt weatherfile.epw
+    -np
+
+daylightfactor
+    diva daylightfactor inputfile.dlt
+    -np
+    
+illuminance
+    diva illuminance inputfile.dlt [ weatherfile.epw ]
+    -np
+    
+radmap
+    diva radmap inputfile.dlt weatherfile.epw 
+    -np
+
+render
+    diva render inputfile.dlt [ weatherfile.epw ]
+    
+radimage
+    diva radimage inputfile.dlt weatherfile.epw
+
+glare
+    diva glare inputfile.dlt [ weatherfile.epw ]
+     -time mo dy hr
