@@ -15,9 +15,10 @@ import subprocess
 import sys
 import zipfile
 import csv
+import time
 
 # Relevant paths in Energyplus Docker container
-ENERGYPLUS_DIR = "/opt/EnergyPlus-8-5-0"
+ENERGYPLUS_DIR = "/usr/local/EnergyPlus-8-6-0"
 
 # Open the cases zipfile
 try:
@@ -33,53 +34,61 @@ except (IndexError, IOError) as e:
   print 'Cases zip file could not be found and/or case not given'
   raise e
   
-# Find the epw and idf files
-ep_names = [name for name in names if 'honeybee_energyplus' in name]
-epw_file_paths = [name for name in ep_names if CASE_NAME + "/" in name and ".epw" in name]
-idf_file_paths = [name for name in ep_names if CASE_NAME + "/" in name and ".idf" in name]
+# Find the epw and imf files
+ep_names = [name for name in names if '.imf' in name]
+epw_file_paths = [name for name in names if CASE_NAME + "/" in name and ".epw" in name]
+imf_file_paths = [name for name in names if CASE_NAME + "/" in name and ".imf" in name]
+
 print epw_file_paths
-print idf_file_paths
+print imf_file_paths
 
 # Get path to case's epw file
 case_epw_file_path = [name for name in epw_file_paths if CASE_NAME in name]
+
 if len(case_epw_file_path) != 1:
   raise Exception('Found more than one .epw file for "{}" case'.format(CASE_NAME))
 case_epw_file_path = case_epw_file_path[0]
 
 
-# Get path to case's idf file
-case_idf_file_path = [name for name in idf_file_paths if CASE_NAME in name]
-if len(case_idf_file_path) != 1:
-  raise Exception('Found more than one .idf file for "{}" case'.format(CASE_NAME))
-case_idf_file_path = case_idf_file_path[0]
+# Get path to case's imf file
+case_imf_file_path = [name for name in imf_file_paths if CASE_NAME in name]
+if len(case_imf_file_path) != 1:
+  raise Exception('Found more than one .imf file for "{}" case'.format(CASE_NAME))
+case_imf_file_path = case_imf_file_path[0]
 
-# Find filename of epw and idf, without path
+# Find filename of epw and imf, without path
 case_epw = str(os.path.basename(case_epw_file_path))
-case_idf = str(os.path.basename(case_idf_file_path))
+case_imf = str(os.path.basename(case_imf_file_path))
 
 
 # Set enviroment variables
 my_env = os.environ
-my_env["ENERGYPLUS_DIR"] = ENERGYPLUS_DIR
-my_env["PATH"] = ENERGYPLUS_DIR + ":" + my_env["PATH"]
+# my_env["ENERGYPLUS_DIR"] = ENERGYPLUS_DIR
+# my_env["PATH"] = ENERGYPLUS_DIR + ":" + my_env["PATH"]
 
 
 # Extract remaining case files and run the case
 case_files = [f for f in names if CASE_NAME in f]
 cases.extractall(members=case_files)
 
-
-
 # Format cases for runenergyplus
 case_epw = case_epw.replace(".epw", "")
-case_idf = case_idf.replace(".idf","")
+case_imf = case_imf.replace(".imf","")
 
+print case_epw
+print case_imf
+
+print RUN_DIR
+print my_env
 # Call Energy Plus
-subprocess.call(["runenergyplus",case_idf, case_epw],cwd=RUN_DIR, env=my_env)
+subprocess.call(["runenergyplus",case_imf, case_epw],cwd=RUN_DIR, env=my_env)
 
 # Get path to CSV File
 ep_output_names = os.listdir(EP_OUTPUT)
 csv_names = [name for name in ep_output_names if 'Zsz.csv' not in name and '.csv' in name]
+
+csv_names = [name for name in csv_names if 'Meter.csv' not in name and '.csv' in name]
+
 print csv_names
 if len(csv_names) != 1:
   raise Exception('Found more than one .csv file for "{}" case'.format(CASE_NAME))

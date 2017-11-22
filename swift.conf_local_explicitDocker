@@ -1,0 +1,42 @@
+sites: [linuxpool]
+site.linuxpool {
+ execution {
+    type: "coaster-persistent"
+    URL: "http://localhost:4030"
+ }
+
+
+	filesystem {
+		type: local
+	}
+ staging: local
+ initialParallelTasks: 5
+ maxParallelTasks: 5
+
+# workDirectory: ${env.PWD}"/swiftwork"
+
+ workDirectory: "/tmp/swiftwork"
+ app.ALL {
+    env {
+
+    }
+    executable: "*"
+ }
+ app.preprocess {
+    executable: "/usr/bin/python2"
+    maxWallTime: "24:00:00"
+    exclusive: true
+ }
+ app.bashRun {
+    executable: "/bin/bash"
+     }
+ app.bashPostProcess{ 
+    executable: "/bin/bash"
+     }
+}
+
+lazyErrors: true
+executionRetries: 0
+keepSiteDir: false
+providerStagingPinSwiftFiles: false
+alwaysTransferWrapperLog: true

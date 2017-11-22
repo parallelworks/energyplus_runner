@@ -1,13 +1,20 @@
-sites: [defaultpool]
-
-site.defaultpool {
+sites: [linuxpool]
+site.linuxpool {
  execution {
     type: "coaster-persistent"
-    URL: "http://go.parallel.works:3041"
+    URL: "http://localhost:4030"
  }
+
+
+	filesystem {
+		type: local
+	}
  staging: local
- initialParallelTasks: 999999
- maxParallelTasks: 999999
+ initialParallelTasks: 5
+ maxParallelTasks: 5
+
+# workDirectory: ${env.PWD}"/swiftwork"
+
  workDirectory: "/tmp/swiftwork"
  app.ALL {
     env {
@@ -15,31 +22,31 @@ site.defaultpool {
     }
     executable: "*"
  }
- app.detectCases {
-    executable: "/bin/bash"
-    maxWallTime: "00:10:00"
+ app.preprocess {
+    executable: "/usr/bin/python2"
+    maxWallTime: "24:00:00"
     exclusive: true
  }
- app.runDiva {
-    executable: "/usr/bin/python"
+ app.run {
+    executable: "/usr/bin/python2"
     maxWallTime: "24:00:00"
     exclusive: true
     options {
        docker {
-         image: "mattshax/diva"
+         image: "parallelworks/energyplus:v8p6"
          jobDirMountPoint: "/scratch"
          registry: "docker.io"
          alwaysPull: true
        }
     }
  }
- app.postDiva {
-    executable: "/usr/bin/python"
-    maxWallTime: "01:00:00"
+ app.postprocess {
+    executable: "/usr/bin/python2"
+    maxWallTime: "24:00:00"
     exclusive: true
     options {
        docker {
-         image: "mattshax/diva"
+         image: "parallelworks/energyplus:v8p6"
          jobDirMountPoint: "/scratch"
          registry: "docker.io"
          alwaysPull: true
@@ -49,7 +56,7 @@ site.defaultpool {
 }
 
 lazyErrors: true
-executionRetries: 1
+executionRetries: 0
 keepSiteDir: false
 providerStagingPinSwiftFiles: false
-alwaysTransferWrapperLog: false
+alwaysTransferWrapperLog: true
